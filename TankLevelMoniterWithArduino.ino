@@ -9,37 +9,67 @@ void setup() {
   lcd.init();
   lcd.backlight();
   lcd.setCursor(0,0);
-  lcd.print("Welcome, Tank");
+  lcd.print("Tank Lev Moniter");
   lcd.setCursor(3,1);
-  lcd.print("Level Moniter");
+  lcd.print("Welcome");
   level = getTankLevel();
   startEEPROM = EEPROM.read(0);
   len = EEPROM.read(1);
-  for (int i=0; i<len i++) {
+  for (int i=0; i<len; i++) {
     l[i] = EEPROM.read(startEEPROM+i);
   }
+  delay(3000);
 }
 
 void loop() {
-  int l = getTankLevel();
+  int nl = getTankLevel();
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Tank 1: ");
-  lcd.print(l);
+  lcd.print(nl);
   lcd.print("%");
-  if (mills%600000>tenMinCounter) {
-    lcd.setCursor(0,1);
-    for (int i=0; i<len i++) {
-      lcd.print(l[i]);
-      if(i<4) {
-        lcd.print("-");
-      }
-    }
+  if (millis()/10000>=tenMinCounter) {
+    doTenMinSave(nl);
   }
-  
+  delay(10000);
 }
 
+void initializeEEPROM() {
+  EEPROM.write(0,2);
+  EEPROM.write(1,0);
+}
 
+void tenMinSave(int nl) {
+  tenMinCounter++;
+  if (len==5) {
+    if (startEEPROM==248) {
+      EEPROM.write(0,2);
+      EEPROM.write(1,1);
+    }
+    EEPROM.write(startEEPROM+len,nl);
+    startEEPROM++;
+    EEPROM.write(0,startEEPROM);
+    l[0]=l[1];
+    l[1]=l[2];
+    l[2]=l[3];
+    l[3]=l[4];
+    l[4]=nl;
+  } else {
+    EEPROM.write(startEEPROM+len,nl);
+    len++;
+    EEPROM.write(1,len);
+    l[len-1]=nl;
+  }
+  lcd.setCursor(0,1);
+  for (int i=len; i>0; i--) {
+    lcd.print(l[i-1]);
+    if(i>1) {
+      lcd.print("-");
+    }
+  }
+}
+
+int temp=50;
 int getTankLevel() {
-  return 50;
+  return temp++;
 }
