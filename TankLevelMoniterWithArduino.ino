@@ -3,8 +3,8 @@
 #include <EEPROM.h>
 
 int EEsize = 1024;
-const int trigPin = 3;
-const int echoPin = 6;
+const int trigPin = 6;
+const int echoPin = 10;
 int openDistance = 5, totalTankLevel = 50;
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
 int startEEPROM,l[5],len,tenMinCounter=0,nl=0,ll=0,distance,oneMinCounter=0,alarmStatus=1,MotorStatus;
@@ -38,13 +38,13 @@ void loop() {
   if (alarmStatus == 1) {
     for (int thisNote = 0; thisNote < 8; thisNote++) {
       int noteDuration = 1000 / noteDurations[thisNote];
-      tone(8, melody[thisNote], noteDuration);
+      tone(2, melody[thisNote], noteDuration);
       int pauseBetweenNotes = noteDuration * 1.30;
       delay(pauseBetweenNotes);
-      noTone(8);
+      noTone(2);
     }
   }
-  if (millis()/10000>oneMinCounter) {
+  if (millis()/10000>=oneMinCounter) {
     oneMinCounter++;
     ll=nl;
     nl = getTankLevel();
